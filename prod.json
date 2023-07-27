@@ -4,11 +4,11 @@
     "Parallel": "true",
     "Stacks":{
         "ap-south-1":{
-            "Demo":{
+            "Sensu-Test-Stack": {
                 "Parameters": {
-                },
+                    },
                     "SkipUpdate": false,
-                    "TemplatePath": "./templates/demo.json"
+                    "TemplatePath": "./templates/sensu.json"
                 }
         }
     }
