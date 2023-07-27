@@ -1060,14 +1060,6 @@
           {
             "Environment": [
               {
-                "Name": "SENSU_ANNOTATIONS",
-                "Value": "{\"foo\": \"bar\", \"baz\": \"qux\"}"
-              },
-              {
-                "Name": "SENSU_LABELS",
-                "Value": "{\"foo\": \"bar\", \"baz\": \"qux\", \"hostname\": \"$HOSTNAME\"}"
-              },
-              {
                 "Name" : "SENSU_BACKEND_URL",
                 "Value" : "ws://internal-Sensu-Sensu-1FA0TCO8EDQMI-956966320.ap-south-1.elb.amazonaws.com"
               },
