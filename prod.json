@@ -1,13 +1,14 @@
 {
     "BucketName": "yashprime",
-    "BucketRegion": "ap-south-1", "Parallel": "true",
+    "BucketRegion": "ap-south-1", 
+    "Parallel": "true",
     "Stacks":{
         "ap-south-1":{
-            "Mumbai-DS-SecurityGroup":{
+            "Demo":{
                 "Parameters": {
                 },
                     "SkipUpdate": false,
-                    "TemplatePath": "./templates/sensu.json"
+                    "TemplatePath": "./templates/demo.json"
                 }
         }
     }
