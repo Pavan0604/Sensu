@@ -1,4 +1,10 @@
 {
+  "Parameters": {
+    "AMIHuman": {
+      "Default": "",
+      "Type": "String"
+    }
+  },
   "Resources": {
     "Ec2Vpc": {
         "Type": "AWS::EC2::VPC",
