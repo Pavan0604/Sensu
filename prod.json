@@ -6,7 +6,7 @@
         "ap-south-1":{
             "Sensu-Test-Stack": {
                 "Parameters": {
-                    "AMIHuman": "true"
+                    "AMIHuman": "false"
                     },
                     "SkipUpdate": false,
                     "TemplatePath": "./templates/sensu.json"
