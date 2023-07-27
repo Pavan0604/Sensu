@@ -1,0 +1,1502 @@
+{
+  "Resources": {
+    "Ec2Vpc": {
+        "Type": "AWS::EC2::VPC",
+        "Properties": {
+          "CidrBlock": "10.0.0.0/16",
+          "EnableDnsSupport": "true",
+          "EnableDnsHostnames": "true",
+          "InstanceTenancy": "default"
+        }
+      },
+    "Ec2InternetGateway": {
+        "Type": "AWS::EC2::InternetGateway",
+        "Properties": {
+          "Tags": [
+            {
+              "Key": "Ec2",
+              "Value": "InternetGateway"
+            }
+          ]
+        }
+      },
+    "Ec2VpcGatewayAttachment": {
+        "Type": "AWS::EC2::VPCGatewayAttachment",
+        "Properties": {
+          "VpcId": {
+            "Ref": "Ec2Vpc"
+          },
+          "InternetGatewayId": {
+            "Ref": "Ec2InternetGateway"
+          }
+        }
+      },
+    "IgwEc2RouteTable": {
+        "Type": "AWS::EC2::RouteTable",
+        "Properties": {
+          "VpcId": {
+            "Ref": "Ec2Vpc"
+          },
+          "Tags": [
+            {
+              "Key": "Ec2",
+              "Value": "IgwRouteTable"
+            }
+          ]
+        }
+      },
+    "IgwRouteTableEc2Route": {
+        "Type": "AWS::EC2::Route",
+        "DependsOn": [
+          "Ec2InternetGateway",
+          "Ec2VpcGatewayAttachment"
+        ],
+        "Properties": {
+          "RouteTableId": {
+            "Ref": "IgwEc2RouteTable"
+          },
+          "DestinationCidrBlock": "0.0.0.0/0",
+          "GatewayId": {
+            "Ref": "Ec2InternetGateway"
+          }
+        }
+      },
+    "SensuAz1aPublicSubnetRouteTable": {
+        "Type": "AWS::EC2::RouteTable",
+        "Properties": {
+          "VpcId": {
+            "Ref": "Ec2Vpc"
+          }
+        }
+      },
+    "SensuAz1aPublicSubnetRoute": {
+        "Type": "AWS::EC2::Route",
+        "Properties": {
+          "RouteTableId": {
+            "Ref": "SensuAz1aPublicSubnetRouteTable"
+          },
+          "DestinationCidrBlock": "0.0.0.0/0",
+          "GatewayId": {
+            "Ref": "Ec2InternetGateway"
+          }
+        }
+      },
+    "SensuAz1aPublicSubnet": {
+        "Type": "AWS::EC2::Subnet",
+        "Properties": {
+          "AvailabilityZone": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "AWS::Region"
+                },
+                "a"
+              ]
+            ]
+          },
+          "CidrBlock": "10.0.1.0/24",
+          "MapPublicIpOnLaunch": "true",
+          "VpcId": {
+            "Ref": "Ec2Vpc"
+          }
+        }
+      },
+    "SensuAz1aPublicSubnetRouteTableAssociation": {
+        "Type": "AWS::EC2::SubnetRouteTableAssociation",
+        "Properties": {
+          "RouteTableId": {
+            "Ref": "SensuAz1aPublicSubnetRouteTable"
+          },
+          "SubnetId": {
+            "Ref": "SensuAz1aPublicSubnet"
+          }
+        }
+      },
+    "SensuAz1bPublicSubnetRouteTable": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "Ec2Vpc"
+        }
+      }
+    },
+    "SensuAz1bPublicSubnetRoute": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "SensuAz1bPublicSubnetRouteTable"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "Ec2InternetGateway"
+        }
+      }
+    },
+    "SensuAz1bPublicSubnet": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Ref": "AWS::Region"
+              },
+              "b"
+            ]
+          ]
+        },
+        "CidrBlock": "10.0.2.0/24",
+        "MapPublicIpOnLaunch": "true",
+        "VpcId": {
+          "Ref": "Ec2Vpc"
+        }
+      }
+    },
+    "SensuAz1bPublicSubnetRouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "SensuAz1bPublicSubnetRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "SensuAz1bPublicSubnet"
+        }
+      }
+    },
+    "SensuAz1aPrivateSubnet": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Ref": "AWS::Region"
+              },
+              "a"
+            ]
+          ]
+        },
+        "CidrBlock": "10.0.3.0/24",
+        "MapPublicIpOnLaunch": "false",
+        "VpcId": {
+          "Ref": "Ec2Vpc"
+        }
+      }
+    },
+    "SensuAz1bPrivateSubnet": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Ref": "AWS::Region"
+              },
+              "b"
+            ]
+          ]
+        },
+        "CidrBlock": "10.0.4.0/24",
+        "MapPublicIpOnLaunch": "false",
+        "VpcId": {
+          "Ref": "Ec2Vpc"
+        }
+      }
+    },
+    "SensuNatGatewayEip": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc"
+      }
+    },
+    "Sensu1aNatGateway": {
+      "Type": "AWS::EC2::NatGateway",
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "SensuNatGatewayEip",
+            "AllocationId"
+          ]
+        },
+        "SubnetId": {
+          "Ref": "SensuAz1aPublicSubnet"
+        },
+        "Tags": [
+          {
+            "Key": "ct-aws:cloudformation:stack-name",
+            "Value": {
+              "Ref": "AWS::StackName"
+            }
+          }
+        ]
+      }
+    },
+    "SensuNatGateway1aRouteTable": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "Ec2Vpc"
+        }
+      }
+    },
+    "SensuNatGateway1aRoute": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "SensuNatGateway1aRouteTable"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "Sensu1aNatGateway"
+        }
+      }
+    },
+    "Sensu1aSubnetRouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "SensuNatGateway1aRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "SensuAz1aPrivateSubnet"
+        }
+      }
+    },
+    "Sensu1bSubnetRouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "SensuNatGateway1aRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "SensuAz1bPrivateSubnet"
+        }
+      }
+    },
+    "SensuEcsCluster": {
+        "Type": "AWS::ECS::Cluster",
+        "Properties": {
+        }
+      },
+    "SensuContainerLogsLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "RetentionInDays": 7
+      }
+    },
+    "SensuBackendEcsTaskDefinitionIamRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sts:AssumeRole"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "ecs-tasks.amazonaws.com"
+                ]
+              }
+            }
+          ]
+        },
+        "Path": "/",
+        "RoleName": {
+          "Fn::Join": [
+            "-",
+            [
+              {
+                "Ref": "AWS::StackName"
+              },
+              "SensuBackendEcsTaskDefinitionIamRole"
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::IAM::Role"
+    },
+    "SensuBackendEcsTaskExecutionIamPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": {
+          "Fn::Join": [
+            "-",
+            [
+              {
+                "Ref": "AWS::StackName"
+              },
+              "SensuBackendEcsTaskExecutionIamPolicy"
+            ]
+          ]
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Sid": "AllowSecretsRetriveSensuCredentials",
+              "Effect": "Allow",
+              "Action": [
+                "secretsmanager:GetSecretValue"
+              ],
+              "Resource": [
+                {
+                  "Ref": "SensuLoginKeySecretsManagerSecret"
+                }
+              ]
+            },
+            {
+              "Sid": "AllowSecretsRetriveCloudflareCredentials",
+              "Effect": "Allow",
+              "Action": [
+                "secretsmanager:GetSecretValue"
+              ],
+              "Resource": [
+                {
+                  "Ref": "CloudflareWebUiTunnelTokenSecretsManagerSecret"
+                }
+              ]
+            },
+            {
+              "Sid": "AllowSecretsRetriveCloudflareSensuApiCredentials",
+              "Effect": "Allow",
+              "Action": [
+                "secretsmanager:GetSecretValue"
+              ],
+              "Resource": [
+                {
+                  "Ref": "CloudflareSensuApiTunnelTokenSecretsManagerSecret"
+                }
+              ]
+            },
+            {
+              "Sid": "AllowSecretsRetriveRDSCredentials",
+              "Effect": "Allow",
+              "Action": [
+                "secretsmanager:GetSecretValue"
+              ],
+              "Resource": [
+                {
+                  "Ref": "SensuRdsSecretsManagerSecret"
+                }
+              ]
+            },
+            {
+              "Sid": "EnableEcsExecCommandsToExecute",
+              "Effect": "Allow",
+              "Action": [
+                "ssmmessages:CreateControlChannel",
+                "ssmmessages:CreateDataChannel",
+                "ssmmessages:OpenControlChannel",
+                "ssmmessages:OpenDataChannel"
+              ],
+              "Resource": "*"
+            },
+            {
+              "Sid": "WriteLogsToCloudWatchLogs",
+              "Effect": "Allow",
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Resource": "*"
+            }
+          ]
+        },
+        "Roles": [
+          {
+            "Ref": "SensuBackendEcsTaskDefinitionIamRole"
+          }
+        ]
+      }
+    },
+    "SensuLoginKeySecretsManagerSecret": {
+      "Type": "AWS::SecretsManager::Secret",
+      "Properties": {
+        "Description": {
+          "Fn::Sub": "This is a Secrets Manager secret for ${AWS::StackName}-VMagentLast9SecretsManagerSecret"
+        },
+        "SecretString": "{\"SENSU_BACKEND_CLUSTER_ADMIN_PASSWORD\":\"replaceitwithpasswordofsensu\"}"
+      }
+    },
+    "SensuEcsTaskSecurityGroup" : {
+      "Type" : "AWS::EC2::SecurityGroup",
+      "Properties" : {
+        "GroupDescription" : "Allow http to client host",
+        "VpcId" : {
+          "Ref" : "Ec2Vpc"
+        },
+        "SecurityGroupIngress" : [
+          {
+            "IpProtocol" : "tcp",
+            "FromPort" : 8080,
+            "ToPort" : 8080,
+            "CidrIp" : "0.0.0.0/0"
+          },
+          {
+            "IpProtocol" : "tcp",
+            "FromPort" : 8081,
+            "ToPort" : 8081,
+            "CidrIp" : "0.0.0.0/0"
+          },
+          {
+            "IpProtocol" : "tcp",
+            "FromPort" : 3000,
+            "ToPort" : 3000,
+            "CidrIp" : "0.0.0.0/0"
+          }
+        ]
+      }
+    },
+    "SensuRDSKmsKey": {
+      "Properties": {
+        "Description": "KMS key used for Encrypted volume",
+        "EnableKeyRotation": true,
+        "Enabled": true,
+        "KeyPolicy": {
+          "Id": "key-default-1",
+          "Statement": [
+            {
+              "Action": "kms:*",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    ":",
+                    [
+                      "arn:aws:iam:",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      "root"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*",
+              "Sid": "EnableIamPoliciesToGiveIamUsersAndRolesInTheAccountAccessToThisCmk"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Tags": [
+          {
+            "Key": "ct-aws:cloudformation:stack-name",
+            "Value": {
+              "Ref": "AWS::StackName"
+            }
+          },
+          {
+            "Key": "Identifier",
+            "Value": {
+              "Fn::Sub": "${AWS::StackName}-SensuSsoKmsKey"
+            }
+          }
+        ]
+      },
+      "Type": "AWS::KMS::Key"
+    },
+    "SensuRdsDbSubnetGroup": {
+      "Type": "AWS::RDS::DBSubnetGroup",
+      "Properties": {
+        "DBSubnetGroupDescription": "RedHatSsoRds db subnet group",
+        "SubnetIds": [
+          {
+            "Ref": "SensuAz1aPrivateSubnet"
+          },
+          {
+            "Ref": "SensuAz1bPrivateSubnet"
+          }
+        ]
+      }
+    },
+    "SensuRdsSecretsManagerSecret": {
+      "Type": "AWS::SecretsManager::Secret",
+      "Properties": {
+        "Description": {
+          "Fn::Sub": "This is a Secrets Manager secret for RedHat SSO RedHatSsoRds instance"
+        },
+        "GenerateSecretString": {
+          "SecretStringTemplate": "{\"username\": \"postgres\"}",
+          "GenerateStringKey": "password",
+          "PasswordLength": 20,
+          "ExcludeCharacters": "\"@/\\'`(){}[]:!$"
+        }
+      }
+    },
+    "SensuRDSSecurityGroup" : {
+      "Type" : "AWS::EC2::SecurityGroup",
+      "Properties" : {
+        "GroupDescription" : "Allow http to client host",
+        "VpcId" : {
+          "Ref" : "Ec2Vpc"
+        },
+        "SecurityGroupIngress" : [
+          {
+            "IpProtocol" : "tcp",
+            "FromPort" : 5432,
+            "ToPort" : 5432,
+            "CidrIp" : "0.0.0.0/0"
+          }
+        ]
+      }
+    },
+    "SensuRdsDbInstance": {
+      "Type": "AWS::RDS::DBInstance",
+      "Properties": {
+        "AllocatedStorage": "20",
+        "AllowMajorVersionUpgrade": false,
+        "AutoMinorVersionUpgrade": true,
+        "BackupRetentionPeriod": 30,
+        "CopyTagsToSnapshot": true,
+        "DBInstanceClass": "db.t3.micro",
+        "DBName": "postgres",
+        "DBSubnetGroupName": {
+          "Ref": "SensuRdsDbSubnetGroup"
+        },
+        "Engine": "postgres",
+        "EngineVersion": "15.2",
+        "KmsKeyId": {
+          "Ref": "SensuRDSKmsKey"
+        },
+        "MasterUsername": {
+          "Fn::Join": [
+            "",
+            [
+              "{{resolve:secretsmanager:",
+              {
+                "Ref": "SensuRdsSecretsManagerSecret"
+              },
+              ":SecretString:username}}"
+            ]
+          ]
+        },
+        "MasterUserPassword": {
+          "Fn::Join": [
+            "",
+            [
+              "{{resolve:secretsmanager:",
+              {
+                "Ref": "SensuRdsSecretsManagerSecret"
+              },
+              ":SecretString:password}}"
+            ]
+          ]
+        },
+        "MultiAZ": true,
+        "Port": "5432",
+        "PubliclyAccessible": false,
+        "StorageType": "gp2",
+        "StorageEncrypted": true,
+        "VPCSecurityGroups": [
+          {
+            "Ref": "SensuRDSSecurityGroup"
+          }
+        ]
+      },
+      "DeletionPolicy": "Delete"
+    },
+    "CloudflareWebUiTunnelTokenSecretsManagerSecret":  {
+        "Type": "AWS::SecretsManager::Secret",
+        "Properties": {
+          "Description": {
+            "Fn::Sub": "This is a Secrets Manager secret for Sensu WebUI"
+          },
+          "SecretString" : "<replaceme>"
+        }
+      },
+    "CloudflareSensuApiTunnelTokenSecretsManagerSecret": {
+      "Type": "AWS::SecretsManager::Secret",
+      "Properties": {
+        "Description": {
+          "Fn::Sub": "This is a Secrets Manager secret for Sensu HTTP API"
+        },
+        "SecretString" : "<replaceme>"
+      }
+    },
+    "SensuBackendEcsTaskDefinition": {
+      "Type": "AWS::ECS::TaskDefinition",
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Environment": [
+              {
+                "Name": "SENSU_MODE",
+                "Value": "server"
+              },
+              {
+                "Name": "SENSU_BACKEND_NO_EMBED_ETCD",
+                "Value": true
+              },
+              {
+                "Name": "SENSU_BACKEND_ETCD_ADVERTISE_CLIENT_URLS",
+                "Value": "http://etcd.cloudstudent.shop:2379"
+              },
+              {
+                "Name": "SENSU_BACKEND_ETCD_INITIAL_ADVERTISE_PEER_URLS",
+                "Value": "http://etcd.cloudstudent.shop:2380"
+              },
+              {
+                "Name": "SENSU_BACKEND_ETCD_LISTEN_CLIENT_URLS",
+                "Value": "http://0.0.0.0:2379"
+              },
+              {
+                "Name": "SENSU_BACKEND_ETCD_LISTEN_PEER_URLS",
+                "Value": "http://0.0.0.0:2380"
+              },
+              {
+                "Name": "SENSU_BACKEND_ETCD_INITIAL_CLUSTER",
+                "Value": "default=http://etcd.cloudstudent.shop:2380"
+              },
+              {
+                "Name": "SENSU_BACKEND_ETCD_INITIAL_CLUSTER_STATE",
+                "Value": "new"
+              },
+              {
+                "Name": "SENSU_BACKEND_ETCD_INITIAL_CLUSTER_TOKEN",
+                "Value": "sensu-cluster-token"
+              },
+              {
+                "Name": "SENSU_BACKEND_STATE_DIR",
+                "Value": "/var/lib/sensu/sensu-backend"
+              },
+              {
+                "Name": "STACK_NAME",
+                "Value": {
+                  "Ref": "AWS::StackName"
+                }
+              },
+              {
+                "Name": "PGUSER",
+                "Value": "postgres"
+              },
+              {
+                "Name": "PGPASSWORD",
+                "Value": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "{{resolve:secretsmanager:",
+                      {
+                        "Ref": "SensuRdsSecretsManagerSecret"
+                      },
+                      ":SecretString:password}}"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Name": "PGPORT",
+                "Value": "5432"
+              },
+              {
+                "Name": "PGDATABASE",
+                "Value": "sensu_events"
+              },
+              {
+                "Name": "PGHOST",
+                "Value": "sensu-sensurdsdbinstance-gv8sxj2z2huu.cucavzhcsjyb.ap-south-1.rds.amazonaws.com"
+              },
+              {
+                "Name": "SENSU_BACKEND_CLUSTER_ADMIN_PASSWORD",
+                "Value": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "{{resolve:secretsmanager:",
+                      {
+                        "Ref": "SensuLoginKeySecretsManagerSecret"
+                      },
+                      ":SecretString:SENSU_BACKEND_CLUSTER_ADMIN_PASSWORD}}"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Name" : "SENSU_BACKEND_CLUSTER_ADMIN_USERNAME",
+                "Value" : "admin"
+              }
+            ],
+            "DependsOn": [
+              {
+                "Condition": "SUCCESS",
+                "ContainerName": "sensu-config-provider"
+              }
+            ],
+            "Essential": true,
+            "Image": "sensu/sensu",
+            "PortMappings": [
+              {
+                "ContainerPort": 3000,
+                "HostPort": 3000,
+                "Protocol": "tcp"
+              },
+              {
+                "ContainerPort": 8080,
+                "HostPort": 8080,
+                "Protocol": "tcp"
+              },
+              {
+                "ContainerPort": 8081,
+                "HostPort": 8081,
+                "Protocol": "tcp"
+              }
+            ],
+            "MemoryReservation": "256",
+            "MountPoints": [
+              {
+                "ContainerPath": "/etc/sensu/entities/",
+                "SourceVolume": "sensu-config"
+              },
+              {
+                "ContainerPath": "/var/lib/sensu/sensu-backend/etcd",
+                "SourceVolume": "sensu-backend-data"
+              }
+            ],
+            "Name": "Sensu",
+            "Privileged": false,
+            "ReadonlyRootFilesystem": false,
+            "Ulimits": [
+              {
+                "HardLimit": 983362,
+                "Name": "nofile",
+                "SoftLimit": 983362
+              },
+              {
+                "HardLimit": 983362,
+                "Name": "nproc",
+                "SoftLimit": 983362
+              },
+              {
+                "HardLimit": 983362,
+                "Name": "sigpending",
+                "SoftLimit": 983362
+              }
+            ],
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "SensuContainerLogsLogGroup"
+                },
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                },
+                "awslogs-stream-prefix": "sensu"
+              }
+            },
+            "EntryPoint": [
+              "sh",
+              "-c",
+              "sensu-backend start --config-file /etc/sensu/entities/postgres.yaml"
+            ]
+          },
+          {
+            "Essential": true,
+            "Image": "cloudflare/cloudflared:2023.3.1",
+            "Name": {
+              "Fn::Join": [
+                "-",
+                [
+                  {
+                    "Ref": "AWS::StackName"
+                  },
+                  "Cloudflare-WebUi"
+                ]
+              ]
+
+            },
+            "Environment": [
+              {
+                "Name": "TUNNEL_LOGLEVEL",
+                "Value": "debug"
+              }
+            ],
+            "ReadonlyRootFilesystem": false,
+            "Ulimits": [
+              {
+                "HardLimit": 900000,
+                "Name": "nofile",
+                "SoftLimit": 900000
+              }
+            ],
+            "MemoryReservation": "256",
+            "EntryPoint": [
+              "cloudflared",
+              "tunnel",
+              "--url",
+              "http://localhost:3000",
+              "--no-autoupdate",
+              "run"
+            ],
+            "Secrets": [
+              {
+                "Name": "TUNNEL_TOKEN",
+                "ValueFrom": {
+                  "Ref": "CloudflareWebUiTunnelTokenSecretsManagerSecret"
+                }
+              }
+            ]
+          },
+          {
+            "Essential": true,
+            "Image": "cloudflare/cloudflared:2023.3.1",
+            "Name": {
+              "Fn::Join": [
+                "-",
+                [
+                  {
+                    "Ref": "AWS::StackName"
+                  },
+                  "Cloudflare-SensuApi"
+                ]
+              ]
+
+            },
+            "Environment": [
+              {
+                "Name": "TUNNEL_LOGLEVEL",
+                "Value": "debug"
+              }
+            ],
+            "ReadonlyRootFilesystem": false,
+            "Ulimits": [
+              {
+                "HardLimit": 900000,
+                "Name": "nofile",
+                "SoftLimit": 900000
+              }
+            ],
+            "MemoryReservation": "256",
+            "EntryPoint": [
+              "cloudflared",
+              "tunnel",
+              "--url",
+              "http://localhost:8080",
+              "--no-autoupdate",
+              "run"
+            ],
+            "Secrets": [
+              {
+                "Name": "TUNNEL_TOKEN",
+                "ValueFrom": {
+                  "Ref": "CloudflareSensuApiTunnelTokenSecretsManagerSecret"
+                }
+              }
+            ]
+          },
+          {
+            "Environment": [
+              {
+                "Name": "PGHOST",
+                "Value": "sensu-sensurdsdbinstance-gv8sxj2z2huu.cucavzhcsjyb.ap-south-1.rds.amazonaws.com"
+              }
+            ],
+            "Command": [
+              "/bin/sh",
+              "-c",
+              "tee /etc/sensu/entities/postgres.yaml << EOF\ntype: PostgresConfig\napi_version: store/v1\nmetadata:\n  name: postgres_datastore\nspec:\n  dsn: \"postgresql://$PGHOST\"\n  pool_size: 20\n  strict: true\nEOF"
+            ],
+            "Essential": false,
+            "Image": "alpine",
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "SensuContainerLogsLogGroup"
+                },
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                },
+                "awslogs-stream-prefix": "sensu"
+              }
+            },
+            "MemoryReservation": 128,
+            "MountPoints": [
+              {
+                "ContainerPath": "/etc/sensu/entities/",
+                "SourceVolume": "sensu-config"
+              }
+            ],
+            "Name": "sensu-config-provider",
+            "Privileged": false,
+            "ReadonlyRootFilesystem": false,
+            "Ulimits": [
+              {
+                "HardLimit": 900000,
+                "Name": "nofile",
+                "SoftLimit": 900000
+              }
+            ]
+          }
+        ],
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "SensuBackendEcsTaskDefinitionIamRole",
+            "Arn"
+          ]
+        },
+        "TaskRoleArn": {
+          "Fn::GetAtt": [
+            "SensuBackendEcsTaskDefinitionIamRole",
+            "Arn"
+          ]
+        },
+        "Family": {
+          "Ref": "AWS::StackName"
+        },
+        "NetworkMode": "awsvpc",
+        "Cpu": "1024",
+        "Memory": "2048",
+        "RequiresCompatibilities": [
+          "FARGATE"
+        ],
+        "Volumes": [
+          {
+            "Name": "sensu-config"
+          },
+          {
+            "Name": "sensu-backend-data"
+          }
+        ]
+      }
+    },
+    "SensuBackendEcsService": {
+      "Type": "AWS::ECS::Service",
+      "Properties": {
+        "Cluster": {
+          "Ref": "SensuEcsCluster"
+        },
+        "DeploymentConfiguration": {
+          "MaximumPercent": "200",
+          "MinimumHealthyPercent": "100"
+        },
+        "DesiredCount": "1",
+        "LaunchType": "FARGATE",
+        "EnableExecuteCommand": "true",
+        "PlatformVersion": "1.4.0",
+        "SchedulingStrategy": "REPLICA",
+        "TaskDefinition": {
+          "Ref": "SensuBackendEcsTaskDefinition"
+        },
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "DISABLED",
+            "Subnets": [
+              {
+                "Ref": "SensuAz1aPrivateSubnet"
+              }
+            ],
+            "SecurityGroups": [
+              {
+                "Ref": "SensuEcsTaskSecurityGroup"
+              }
+            ]
+          }
+        },
+        "PropagateTags" : "SERVICE",
+        "Tags" : [
+          {
+            "Key": "ct-aws:cloudformation:stack-name",
+            "Value": {
+              "Ref": "AWS::StackName"
+            }
+          }
+        ]
+      }
+    },
+    "SensuBackendV2EcsService": {
+      "Type": "AWS::ECS::Service",
+      "Properties": {
+        "Cluster": {
+          "Ref": "SensuEcsCluster"
+        },
+        "DeploymentConfiguration": {
+          "MaximumPercent": "200",
+          "MinimumHealthyPercent": "100"
+        },
+        "DesiredCount": "1",
+        "LaunchType": "FARGATE",
+        "EnableExecuteCommand": "true",
+        "LoadBalancers": [
+          {
+            "ContainerName": "Sensu",
+            "ContainerPort": 8081,
+            "TargetGroupArn" :  {
+              "Ref": "SensuBackendInternalElasticLoadBalancingV2TargetGroup"
+            }
+          }
+        ],
+        "PlatformVersion": "1.4.0",
+        "SchedulingStrategy": "REPLICA",
+        "TaskDefinition": {
+          "Ref": "SensuBackendEcsTaskDefinition"
+        },
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "DISABLED",
+            "Subnets": [
+              {
+                "Ref": "SensuAz1aPrivateSubnet"
+              }
+            ],
+            "SecurityGroups": [
+              {
+                "Ref": "SensuEcsTaskSecurityGroup"
+              }
+            ]
+          }
+        },
+        "PropagateTags" : "SERVICE",
+        "Tags" : [
+          {
+            "Key": "ct-aws:cloudformation:stack-name",
+            "Value": {
+              "Ref": "AWS::StackName"
+            }
+          }
+        ]
+      }
+    },
+    "SensuAgentEcsService": {
+      "Properties": {
+        "Cluster": {
+          "Ref": "SensuAgentECSCluster"
+        },
+        "DeploymentConfiguration": {
+          "MaximumPercent": 100,
+          "MinimumHealthyPercent": 0
+        },
+        "SchedulingStrategy": "DAEMON",
+        "TaskDefinition": {
+          "Ref": "SensuAgentECsTaskDefinition"
+        }
+      },
+      "Type": "AWS::ECS::Service"
+    },
+    "SensuAgentECsTaskDefinition": {
+      "Type": "AWS::ECS::TaskDefinition",
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Environment": [
+              {
+                "Name": "SENSU_ANNOTATIONS",
+                "Value": "{\"foo\": \"bar\", \"baz\": \"qux\"}"
+              },
+              {
+                "Name": "SENSU_LABELS",
+                "Value": "{\"foo\": \"bar\", \"baz\": \"qux\", \"hostname\": \"$HOSTNAME\"}"
+              },
+              {
+                "Name" : "SENSU_BACKEND_URL",
+                "Value" : "ws://internal-Sensu-Sensu-1FA0TCO8EDQMI-956966320.ap-south-1.elb.amazonaws.com"
+              },
+              {
+                "Name": "SENSU_INSECURE_SKIP_TLS_VERIFY",
+                "Value": true
+              },
+              {
+                "Name": "SENSU_LOG_LEVEL",
+                "Value": "debug"
+              },
+              {
+                "Name": "SENSU_STRIP_NETWORKS",
+                "Value": "system"
+              },
+              {
+                "Name": "SENSU_API_HOST",
+                "Value": "0.0.0.0"
+              },
+              {
+                "Name": "SENSU_CACHE_DIR",
+                "Value": "/var/lib/sensu"
+              }
+            ],
+            "DependsOn": [
+              {
+                "Condition": "SUCCESS",
+                "ContainerName": "sensu-config-provider"
+              }
+            ],
+            "Essential": true,
+            "Image": "sensu/sensu",
+            "PortMappings": [
+              {
+                "ContainerPort": 3000,
+                "HostPort": 3000,
+                "Protocol": "tcp"
+              },
+              {
+                "ContainerPort": 8080,
+                "HostPort": 8080,
+                "Protocol": "tcp"
+              },
+              {
+                "ContainerPort": 8081,
+                "HostPort": 8081,
+                "Protocol": "tcp"
+              }
+            ],
+            "MemoryReservation": "256",
+            "MountPoints": [
+              {
+                "ContainerPath": "/etc/sensu",
+                "ReadOnly": false,
+                "SourceVolume": "sensu-config"
+              }
+            ],
+            "Name": "Sensu",
+            "Privileged": false,
+            "ReadonlyRootFilesystem": false,
+            "Ulimits": [
+              {
+                "HardLimit": 983362,
+                "Name": "nofile",
+                "SoftLimit": 983362
+              },
+              {
+                "HardLimit": 983362,
+                "Name": "nproc",
+                "SoftLimit": 983362
+              },
+              {
+                "HardLimit": 983362,
+                "Name": "sigpending",
+                "SoftLimit": 983362
+              }
+            ],
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "SensuContainerLogsLogGroup"
+                },
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                },
+                "awslogs-stream-prefix": "sensu"
+              }
+            },
+            "EntryPoint": [
+              "sh",
+              "-c",
+              "sensu-agent start -c /etc/sensu/agent.json"
+            ]
+          },
+          {
+            "Command": [
+              "/bin/sh",
+              "-c",
+              "tee /etc/sensu/agent.json << EOF\n{\n  \"annotations\" : {\n    \"occurrences\" : \"DEFAULT_OCCURRENCES\",\n    \"interval\" : \"DEFAULT_INTERVAL\",\n    \"instanceid\" : \"INSTANCE_ID\",\n    \"instanceip\" : \"INSTANCE_IP\",\n    \"console link\" : \"console_link\",\n    \"hostname\": \"$HOSTNAME\",\n    \"checkDisk\":{\n      \"warning\" :  \"20\",\n      \"critical\" : \"10\"\n    }\n  },\n  \"labels\" : {\n    \"avalibilityzone\" : \"avalibility_zone\",\n    \"instance type\" : \"instance_type\",\n    \"stack\" : \"stack_name\",\n    \"stack name\" : \"stack_name\",\n    \"region\" : \"REGION\",\n    \"instanceid\" : \"INSTANCE_ID\",\n    \"instanceip\" : \"INSTANCE_IP\",\n    \"grafana\" : \"GRAFANA_LINK\"\n  },\n}\nEOF"
+            ],
+            "Essential": false,
+            "Image": "amazonlinux",
+            "MemoryReservation": "256",
+            "MountPoints": [
+              {
+                "ContainerPath": "/etc/sensu",
+                "ReadOnly": false,
+                "SourceVolume": "sensu-config"
+              }
+            ],
+            "Name": "sensu-config-provider",
+            "Privileged": false,
+            "ReadonlyRootFilesystem": false,
+            "Ulimits": [
+              {
+                "HardLimit": 900000,
+                "Name": "nofile",
+                "SoftLimit": 900000
+              }
+            ],
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "SensuContainerLogsLogGroup"
+                },
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                },
+                "awslogs-stream-prefix": "sensu"
+              }
+            }
+          }
+        ],
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "SensuBackendEcsTaskDefinitionIamRole",
+            "Arn"
+          ]
+        },
+        "NetworkMode": "host",
+        "Volumes": [
+          {
+            "Host": {
+              "SourcePath": "/etc/sensu"
+            },
+            "Name": "sensu-config"
+          }
+        ]
+      }
+    },
+    "SensuBackendLoadBalancerTaskSecurityGroup" : {
+      "Type" : "AWS::EC2::SecurityGroup",
+      "Properties" : {
+        "GroupDescription" : "Allow http to client host",
+        "VpcId" : {
+          "Ref" : "Ec2Vpc"
+        },
+        "SecurityGroupIngress" : [
+          {
+            "IpProtocol" : "tcp",
+            "FromPort" : 8080,
+            "ToPort" : 8080,
+            "CidrIp" : "10.0.0.0/16"
+          },
+          {
+            "IpProtocol" : "tcp",
+            "FromPort" : 80,
+            "ToPort" : 80,
+            "CidrIp" : "10.0.0.0/16"
+          },
+          {
+            "IpProtocol" : "tcp",
+            "FromPort" : 8081,
+            "ToPort" : 8081,
+            "CidrIp" : "10.0.0.0/16"
+          }
+        ]
+      }
+    },
+    "SensuBackendInternalElasticLoadBalancingV2LoadBalancer": {
+      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+      "Properties": {
+        "Scheme": "internal",
+        "SecurityGroups": [
+          {
+            "Ref": "SensuBackendLoadBalancerTaskSecurityGroup"
+          }
+        ],
+        "Subnets": [
+          {
+            "Ref": "SensuAz1aPrivateSubnet"
+          },
+          {
+            "Ref": "SensuAz1bPrivateSubnet"
+          }
+        ],
+        "Type": "application",
+        "IpAddressType": "ipv4"
+      }
+    },
+    "SensuBackendInternalElasticLoadBalancingV2Listener": {
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+      "Properties": {
+        "DefaultActions": [
+          {
+            "TargetGroupArn": {
+              "Ref": "SensuBackendInternalElasticLoadBalancingV2TargetGroup"
+            },
+            "Type": "forward"
+          }
+        ],
+        "LoadBalancerArn": {
+          "Ref": "SensuBackendInternalElasticLoadBalancingV2LoadBalancer"
+        },
+        "Port": 8081,
+        "Protocol": "HTTP"
+      }
+    },
+    "SensuBackendInternalElasticLoadBalancingV2ListenerRule": {
+      "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+      "Properties": {
+        "Actions": [
+          {
+            "Type": "forward",
+            "TargetGroupArn": {
+              "Ref": "SensuBackendInternalElasticLoadBalancingV2TargetGroup"
+            }
+          }
+        ],
+        "Conditions": [
+          {
+            "Field": "path-pattern",
+            "Values": [
+              "/*"
+            ]
+          }
+        ],
+        "ListenerArn": {
+          "Ref": "SensuBackendInternalElasticLoadBalancingV2Listener"
+        },
+        "Priority": 1
+      }
+    },
+    "SensuBackendInternalElasticLoadBalancingV2TargetGroup": {
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+      "Properties": {
+        "HealthCheckIntervalSeconds": 60,
+        "HealthCheckPath": "/health",
+        "HealthCheckPort": "8081",
+        "HealthCheckProtocol": "HTTP",
+        "HealthCheckTimeoutSeconds": "30",
+        "HealthyThresholdCount": 2,
+        "Matcher": {
+          "HttpCode": "200-499"
+        },
+        "Port": "8081",
+        "Protocol": "HTTP",
+        "TargetType": "ip",
+        "TargetGroupAttributes": [
+          {
+            "Key": "deregistration_delay.timeout_seconds",
+            "Value": "60"
+          }
+        ],
+        "UnhealthyThresholdCount": 10,
+        "VpcId": {
+          "Ref": "Ec2Vpc"
+        }
+      }
+    },
+    "SensuAgentECSCluster": {
+      "Type": "AWS::ECS::Cluster",
+      "Properties": {
+      }
+    },
+    "SensuAgentEc2InstanceSecurityGroup" : {
+      "Type" : "AWS::EC2::SecurityGroup",
+      "Properties" : {
+        "GroupDescription" : "Allow http to client host",
+        "VpcId" : {
+          "Ref" : "Ec2Vpc"
+        },
+        "SecurityGroupIngress" : [
+          {
+            "IpProtocol" : "tcp",
+            "FromPort" : 80,
+            "ToPort" : 80,
+            "CidrIp" : "0.0.0.0/0"
+          },
+          {
+            "IpProtocol" : "tcp",
+            "FromPort" : 22,
+            "ToPort" : 22,
+            "CidrIp" : "0.0.0.0/0"
+          }
+        ]
+      }
+    },
+    "SensuAgentEcsInstanceLaunchConfiguration": {
+      "Type": "AWS::AutoScaling::LaunchConfiguration",
+      "Properties": {
+        "ImageId": "ami-025fa2a3e27b6e58a",
+        "InstanceType": "t2.micro",
+        "AssociatePublicIpAddress": false,
+        "IamInstanceProfile": {
+          "Ref": "SensuAgentEC2InstanceProfile"
+        },
+        "KeyName": "redhatssokeypair",
+        "SecurityGroups": [
+          {
+            "Ref": "SensuAgentEc2InstanceSecurityGroup"
+          }
+        ],
+        "UserData":  {
+          "Fn::Base64": {
+            "Fn::Sub": "#!/bin/bash\nsudo su;\n echo ECS_CLUSTER=${SensuAgentECSCluster} >> /etc/ecs/ecs.config;"
+          }
+        }
+      }
+    },
+    "SensuAgentEC2InstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Path": "/",
+        "Roles": [{ "Ref": "SensuAgentEC2InstanceRole" }]
+      }
+    },
+    "SensuAgentEC2InstanceRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ec2.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Path": "/",
+        "Policies": [
+          {
+            "PolicyName": "EC2ContainerService",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ecs:CreateCluster",
+                    "ecs:DeregisterContainerInstance",
+                    "ecs:DiscoverPollEndpoint",
+                    "ecs:Poll",
+                    "ecs:RegisterContainerInstance",
+                    "ecs:StartTelemetrySession",
+                    "ecs:Submit*",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": "*"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "SensuEC2AutoScalingGroup": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "LaunchConfigurationName": {
+          "Ref": "SensuAgentEcsInstanceLaunchConfiguration"
+        },
+        "MinSize": "0",
+        "MaxSize": "1",
+        "DesiredCapacity": "1",
+        "VPCZoneIdentifier": [
+          {
+            "Ref": "SensuAz1aPrivateSubnet"
+          },
+          {
+            "Ref": "SensuAz1bPrivateSubnet"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "ECSInstance",
+            "PropagateAtLaunch": true
+          }
+        ]
+      }
+    },
+    "YashPrimeHostedZoneForSensu": {
+      "Type" : "AWS::Route53::HostedZone",
+      "Properties" : {
+        "Name" : "yashprime07.rocks"
+      }
+    }
+  }
+}
+
+
