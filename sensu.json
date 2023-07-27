@@ -632,32 +632,8 @@
                 "Value": true
               },
               {
-                "Name": "SENSU_BACKEND_ETCD_ADVERTISE_CLIENT_URLS",
+                "Name": "SENSU_BACKEND_ETCD_CLIENT_URLS",
                 "Value": "http://etcd.cloudstudent.shop:2379"
-              },
-              {
-                "Name": "SENSU_BACKEND_ETCD_INITIAL_ADVERTISE_PEER_URLS",
-                "Value": "http://etcd.cloudstudent.shop:2380"
-              },
-              {
-                "Name": "SENSU_BACKEND_ETCD_LISTEN_CLIENT_URLS",
-                "Value": "http://0.0.0.0:2379"
-              },
-              {
-                "Name": "SENSU_BACKEND_ETCD_LISTEN_PEER_URLS",
-                "Value": "http://0.0.0.0:2380"
-              },
-              {
-                "Name": "SENSU_BACKEND_ETCD_INITIAL_CLUSTER",
-                "Value": "default=http://etcd.cloudstudent.shop:2380"
-              },
-              {
-                "Name": "SENSU_BACKEND_ETCD_INITIAL_CLUSTER_STATE",
-                "Value": "new"
-              },
-              {
-                "Name": "SENSU_BACKEND_ETCD_INITIAL_CLUSTER_TOKEN",
-                "Value": "sensu-cluster-token"
               },
               {
                 "Name": "SENSU_BACKEND_STATE_DIR",
