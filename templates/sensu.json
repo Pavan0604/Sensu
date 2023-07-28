@@ -1088,6 +1088,10 @@
               {
                 "Condition": "SUCCESS",
                 "ContainerName": "sensu-config-provider"
+              },
+              {
+                "Condition": "SUCCESS",
+                "ContainerName": "sensu-config-overrider"
               }
             ],
             "Essential": true,
@@ -1172,6 +1176,51 @@
               }
             ],
             "Name": "sensu-config-provider",
+            "Privileged": false,
+            "ReadonlyRootFilesystem": false,
+            "Ulimits": [
+              {
+                "HardLimit": 900000,
+                "Name": "nofile",
+                "SoftLimit": 900000
+              }
+            ],
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "SensuContainerLogsLogGroup"
+                },
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                },
+                "awslogs-stream-prefix": "sensu"
+              }
+            }
+          },
+          {
+            "Command": [
+              "/bin/sh",
+              "-c",
+              "export INSTANCE_TYPE=$(curl --fail http://169.254.169.254/latest/meta-data/instance-type/) || exit 1;\n sed -i \"s/instance_type/${INSTANCE_TYPE}/g\" /etc/sensu/agent.json"
+            ],
+            "Essential": false,
+            "DependsOn": [
+              {
+                "Condition": "SUCCESS",
+                "ContainerName": "sensu-config-provider"
+              }
+            ],
+            "Image": "amazonlinux",
+            "MemoryReservation": "256",
+            "MountPoints": [
+              {
+                "ContainerPath": "/etc/sensu",
+                "ReadOnly": false,
+                "SourceVolume": "sensu-config"
+              }
+            ],
+            "Name": "sensu-config-overrider",
             "Privileged": false,
             "ReadonlyRootFilesystem": false,
             "Ulimits": [
