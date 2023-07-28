@@ -1202,7 +1202,7 @@
             "Command": [
               "/bin/sh",
               "-c",
-              "export INSTANCE_TYPE=$(curl --fail http://169.254.169.254/latest/meta-data/instance-type/) || exit 1;\n sed -i \"s/instance_type/${INSTANCE_TYPE}/g\" /etc/sensu/agent.json"
+              "export INSTANCE_TYPE=$(curl --fail http://169.254.169.254/latest/meta-data/instance-type/) || exit 1;\n sed -i \"s/instance_type/${INSTANCE_TYPE}/g\" /etc/sensu/agent.json;\n export CLIENT_ID=$(curl --fail http://169.254.169.254/latest/meta-data/instance-id/) || exit 1;\n sed -i \"s/INSTANCE_ID/${CLIENT_ID}/g\" /etc/sensu/agent.json;"
             ],
             "Essential": false,
             "DependsOn": [
