@@ -213,7 +213,7 @@
         "Domain": "vpc"
       }
     },
-    "Sensu1aAzNatGateway": {
+    "Sensu1aNatGateway": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
         "AllocationId": {
@@ -251,7 +251,7 @@
         },
         "DestinationCidrBlock": "0.0.0.0/0",
         "NatGatewayId": {
-          "Ref": "Sensu1aAzNatGateway"
+          "Ref": "Sensu1aNatGateway"
         }
       }
     },
