@@ -1730,7 +1730,7 @@
         "Name" : "yashprime07.rocks"
       }
     },
-    "EuWestBackendDotClevertapDotNetPublicRecordSet3": {
+    "In1DotBackendDotSensuDotYashPrimeDotRocksPublicRecordSet3": {
       "Type": "AWS::Route53::RecordSet",
       "Properties": {
         "HostedZoneId": "Z02094011BBRAF8RU5WS8",
@@ -1746,9 +1746,8 @@
           "Fn::Join": [
             ".",
             [
-              "in1",
-              "backend",
               "sensu",
+              "backend",
               "yashprime07.rocks"
             ]
           ]
