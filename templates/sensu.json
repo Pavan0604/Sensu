@@ -1037,6 +1037,59 @@
         ]
       }
     },
+    "SensuBackendV3EcsService": {
+      "Type": "AWS::ECS::Service",
+      "Properties": {
+        "Cluster": {
+          "Ref": "SensuEcsCluster"
+        },
+        "DeploymentConfiguration": {
+          "MaximumPercent": "200",
+          "MinimumHealthyPercent": "100"
+        },
+        "DesiredCount": "1",
+        "LaunchType": "FARGATE",
+        "EnableExecuteCommand": "true",
+        "LoadBalancers": [
+          {
+            "ContainerName": "Sensu",
+            "ContainerPort": 8081,
+            "TargetGroupArn" :  {
+              "Ref": "SensuBackendPublicElasticLoadBalancingV2TargetGroup"
+            }
+          }
+        ],
+        "PlatformVersion": "1.4.0",
+        "SchedulingStrategy": "REPLICA",
+        "TaskDefinition": {
+          "Ref": "SensuBackendEcsTaskDefinition"
+        },
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "DISABLED",
+            "Subnets": [
+              {
+                "Ref": "SensuAz1aPrivateSubnet"
+              }
+            ],
+            "SecurityGroups": [
+              {
+                "Ref": "SensuEcsTaskSecurityGroup"
+              }
+            ]
+          }
+        },
+        "PropagateTags" : "SERVICE",
+        "Tags" : [
+          {
+            "Key": "ct-aws:cloudformation:stack-name",
+            "Value": {
+              "Ref": "AWS::StackName"
+            }
+          }
+        ]
+      }
+    },
     "SensuAgentEcsService": {
       "Properties": {
         "Cluster": {
@@ -1445,6 +1498,104 @@
           }
         ],
         "ValidationMethod": "DNS"
+      }
+    },
+    "SensuBackendPublicElasticLoadBalancingV2LoadBalancer": {
+      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+      "Properties": {
+        "Scheme": "internet-facing",
+        "SecurityGroups": [
+          {
+            "Ref": "SensuBackendPublicLoadBalancerTaskSecurityGroup"
+          }
+        ],
+        "Subnets": [
+          {
+            "Ref": "SensuAz1aPublicSubnet"
+          },
+          {
+            "Ref": "SensuAz1bPublicSubnet"
+          }
+        ],
+        "Type": "application",
+        "IpAddressType": "ipv4"
+      }
+    },
+    "SensuBackendPublicElasticLoadBalancingV2Listener": {
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+      "Properties": {
+        "Certificates": [
+          {
+            "CertificateArn": {
+              "Ref": "SensuBackendCertificate"
+            }
+          }
+        ],
+        "DefaultActions": [
+          {
+            "TargetGroupArn": {
+              "Ref": "SensuBackendPublicElasticLoadBalancingV2TargetGroup"
+            },
+            "Type": "forward"
+          }
+        ],
+        "LoadBalancerArn": {
+          "Ref": "SensuBackendPublicElasticLoadBalancingV2LoadBalancer"
+        },
+        "Port": 8081,
+        "Protocol": "HTTPS"
+      }
+    },
+    "SensuBackendPublicElasticLoadBalancingV2ListenerRule": {
+      "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+      "Properties": {
+        "Actions": [
+          {
+            "Type": "forward",
+            "TargetGroupArn": {
+              "Ref": "SensuBackendPublicElasticLoadBalancingV2TargetGroup"
+            }
+          }
+        ],
+        "Conditions": [
+          {
+            "Field": "path-pattern",
+            "Values": [
+              "/*"
+            ]
+          }
+        ],
+        "ListenerArn": {
+          "Ref": "SensuBackendPublicElasticLoadBalancingV2Listener"
+        },
+        "Priority": 1
+      }
+    },
+    "SensuBackendPublicElasticLoadBalancingV2TargetGroup": {
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+      "Properties": {
+        "HealthCheckIntervalSeconds": 60,
+        "HealthCheckPath": "/health",
+        "HealthCheckPort": "8081",
+        "HealthCheckProtocol": "HTTP",
+        "HealthCheckTimeoutSeconds": "30",
+        "HealthyThresholdCount": 2,
+        "Matcher": {
+          "HttpCode": "200-499"
+        },
+        "Port": "8081",
+        "Protocol": "HTTP",
+        "TargetType": "ip",
+        "TargetGroupAttributes": [
+          {
+            "Key": "deregistration_delay.timeout_seconds",
+            "Value": "60"
+          }
+        ],
+        "UnhealthyThresholdCount": 10,
+        "VpcId": {
+          "Ref": "Ec2Vpc"
+        }
       }
     },
     "SensuAgentECSCluster": {
