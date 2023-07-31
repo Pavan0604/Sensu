@@ -1729,6 +1729,33 @@
       "Properties" : {
         "Name" : "yashprime07.rocks"
       }
+    },
+    "EuWestBackendDotClevertapDotNetPublicRecordSet3": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "HostedZoneId": "Z02094011BBRAF8RU5WS8",
+        "ResourceRecords": [
+          {
+            "Fn::GetAtt": [
+              "SensuBackendPublicElasticLoadBalancingV2LoadBalancer",
+              "DNSName"
+            ]
+          }
+        ],
+        "Name": {
+          "Fn::Join": [
+            ".",
+            [
+              "in1",
+              "backend",
+              "sensu",
+              "yashprime07.rocks"
+            ]
+          ]
+        },
+        "TTL": "60",
+        "Type": "CNAME"
+      }
     }
   }
 }
