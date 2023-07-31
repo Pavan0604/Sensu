@@ -345,9 +345,6 @@
               "Resource": [
                 {
                   "Ref": "SensuLoginKeySecretsManagerSecret"
-                },
-                {
-                  "Ref": "SensuLoginKeyV2SecretsManagerSecret"
                 }
               ]
             },
@@ -696,9 +693,9 @@
                     [
                       "{{resolve:secretsmanager:",
                       {
-                        "Ref": "SensuLoginKeySecretsManagerSecret"
+                        "Ref": "SensuLoginKeyV2SecretsManagerSecret"
                       },
-                      ":SecretString:SENSU_BACKEND_CLUSTER_ADMIN_PASSWORD}}"
+                      ":SecretString:SENSUPASSWORD}}"
                     ]
                   ]
                 }

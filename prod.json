@@ -4,6 +4,12 @@
     "Parallel": "true",
     "Stacks":{
         "ap-south-1":{
+            "DemoStack": {
+                "Parameters": {
+                },
+                "SkipUpdate": false,
+                "TemplatePath": "./templates/demo.json"
+            }
         }
     }
 }

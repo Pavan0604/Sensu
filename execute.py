@@ -1,7 +1,7 @@
-import cfstack
+from cfstack import *
 
 def main():
-    cfstack.execute()
+    execute()
 
 if __name__ == "__main__":
     main()
