@@ -345,6 +345,9 @@
               "Resource": [
                 {
                   "Ref": "SensuLoginKeySecretsManagerSecret"
+                },
+                {
+                  "Ref": "SensuLoginKeyV2SecretsManagerSecret"
                 }
               ]
             },
@@ -420,6 +423,15 @@
           "Fn::Sub": "This is a Secrets Manager secret for ${AWS::StackName}-VMagentLast9SecretsManagerSecret"
         },
         "SecretString": "{\"SENSU_BACKEND_CLUSTER_ADMIN_PASSWORD\":\"replaceitwithpasswordofsensu\"}"
+      }
+    },
+    "SensuLoginKeyV2SecretsManagerSecret": {
+      "Type": "AWS::SecretsManager::Secret",
+      "Properties": {
+        "Description": {
+          "Fn::Sub": "This is a Secrets Manager secret for ${AWS::StackName}-VMagentLast9SecretsManagerSecret"
+        },
+        "SecretString": "{\"SENSUPASSWORD\":\"adminuser\"}"
       }
     },
     "SensuEcsTaskSecurityGroup" : {
@@ -1114,11 +1126,11 @@
             "Environment": [
               {
                 "Name" : "SENSU_BACKEND_URL",
-                "Value" : "ws://internal-Sensu-Sensu-1FA0TCO8EDQMI-956966320.ap-south-1.elb.amazonaws.com"
+                "Value" : "wss://sensu.backend.yashprime07.rocks"
               },
               {
                 "Name": "SENSU_INSECURE_SKIP_TLS_VERIFY",
-                "Value": true
+                "Value": false
               },
               {
                 "Name": "SENSU_LOG_LEVEL",
