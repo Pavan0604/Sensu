@@ -959,7 +959,7 @@
           "MaximumPercent": "200",
           "MinimumHealthyPercent": "100"
         },
-        "DesiredCount": "1",
+        "DesiredCount": "0",
         "LaunchType": "FARGATE",
         "EnableExecuteCommand": "true",
         "PlatformVersion": "1.4.0",
@@ -1003,7 +1003,7 @@
           "MaximumPercent": "200",
           "MinimumHealthyPercent": "100"
         },
-        "DesiredCount": "1",
+        "DesiredCount": "0",
         "LaunchType": "FARGATE",
         "EnableExecuteCommand": "true",
         "LoadBalancers": [
