@@ -102,7 +102,7 @@
         }
       }
     },
-    "SensuAz1aPublicSubnetRouteTableAssociation": {
+    "Sensu1aPublicSubnetRouteTableAssociation": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
@@ -110,6 +110,100 @@
         },
         "SubnetId": {
           "Ref": "Sensu1aPublicSubnet"
+        }
+      }
+    },
+    "Sensu1bPublicSubnetRouteTable": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "Ec2Vpc"
+        }
+      }
+    },
+    "Sensu1bPublicSubnetRoute": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "Sensu1bPublicSubnetRouteTable"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "Ec2InternetGateway"
+        }
+      }
+    },
+    "Sensu1bPublicSubnet": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Ref": "AWS::Region"
+              },
+              "b"
+            ]
+          ]
+        },
+        "CidrBlock": "10.1.2.0/24",
+        "MapPublicIpOnLaunch": "true",
+        "VpcId": {
+          "Ref": "Ec2Vpc"
+        }
+      }
+    },
+    "Sensu1bPublicSubnetRouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "Sensu1bPublicSubnetRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "Sensu1bPublicSubnet"
+        }
+      }
+    },
+    "Sensu1aPrivateSubnet": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Ref": "AWS::Region"
+              },
+              "a"
+            ]
+          ]
+        },
+        "CidrBlock": "10.1.3.0/24",
+        "MapPublicIpOnLaunch": "false",
+        "VpcId": {
+          "Ref": "Ec2Vpc"
+        }
+      }
+    },
+    "Sensu1bPrivateSubnet": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Ref": "AWS::Region"
+              },
+              "b"
+            ]
+          ]
+        },
+        "CidrBlock": "10.1.4.0/24",
+        "MapPublicIpOnLaunch": "false",
+        "VpcId": {
+          "Ref": "Ec2Vpc"
         }
       }
     }
