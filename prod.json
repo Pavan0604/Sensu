@@ -4,12 +4,7 @@
     "Parallel": "true",
     "Stacks":{
         "ap-south-1":{
-            "NetworkStack": {
-                "Parameters": {
-                },
-                "SkipUpdate": false,
-                "TemplatePath": "./templates/network.json"
-            }
+
         }
     }
 }
