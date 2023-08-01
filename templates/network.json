@@ -1,0 +1,65 @@
+{
+  "Resources": {
+    "Ec2Vpc": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "10.1.0.0/16",
+        "EnableDnsSupport": "true",
+        "EnableDnsHostnames": "true",
+        "InstanceTenancy": "default"
+      }
+    },
+    "Ec2InternetGateway": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Ec2",
+            "Value": "InternetGateway"
+          }
+        ]
+      }
+    },
+    "Ec2VpcGatewayAttachment": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": {
+          "Ref": "Ec2Vpc"
+        },
+        "InternetGatewayId": {
+          "Ref": "Ec2InternetGateway"
+        }
+      }
+    },
+    "IgwEc2RouteTable": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "Ec2Vpc"
+        },
+        "Tags": [
+          {
+            "Key": "Ec2",
+            "Value": "IgwRouteTable"
+          }
+        ]
+      }
+    },
+    "IgwRouteTableEc2Route": {
+      "Type": "AWS::EC2::Route",
+      "DependsOn": [
+        "Ec2InternetGateway",
+        "Ec2VpcGatewayAttachment"
+      ],
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "IgwEc2RouteTable"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "Ec2InternetGateway"
+        }
+      }
+    }
+  }
+}
