@@ -1261,10 +1261,18 @@
             }
           },
           {
+            "Environment": [
+              {
+                "Name" : "STACKNAME",
+                "Value" : {
+                    "Ref": "AWS::StackName"
+                }
+              }
+            ],
             "Command": [
               "/bin/sh",
               "-c",
-              "export INSTANCE_TYPE=$(curl --fail http://169.254.169.254/latest/meta-data/instance-type/) || exit 1;\n sed -i \"s/instance_type/${INSTANCE_TYPE}/g\" /etc/sensu/agent.json;\n export CLIENT_ID=$(curl --fail http://169.254.169.254/latest/meta-data/instance-id/) || exit 1;\n sed -i \"s/INSTANCE_ID/${CLIENT_ID}/g\" /etc/sensu/agent.json;"
+              "export INSTANCE_TYPE=$(curl --fail http://169.254.169.254/latest/meta-data/instance-type/) || exit 1;\n sed -i \"s/instance_type/${INSTANCE_TYPE}/g\" /etc/sensu/agent.json;\n export CLIENT_ID=$(curl --fail http://169.254.169.254/latest/meta-data/instance-id/) || exit 1;\n sed -i \"s/INSTANCE_ID/${CLIENT_ID}/g\" /etc/sensu/agent.json;\n export IP_ADDRESS=$(curl --fail http://169.254.169.254/latest/meta-data/local-ipv4/) || exit 1;\n sed -i \"s/INSTANCE_IP/${IP_ADDRESS}/g\" /etc/sensu/agent.json;\n export AVAILABILITY_ZONE=$(curl --fail http://169.254.169.254/latest/meta-data/placement/availability-zone/) || exit 1;\n sed -i \"s/avalibility_zone/${AVAILABILITY_ZONE}/g\" /etc/sensu/agent.json;\n sed -i \"s/stack_name/$STACKNAME/g\" /etc/sensu/agent.json;\n export AWS_REGION=$(curl --fail  http://169.254.169.254/latest/dynamic/instance-identity/document | grep -w region | awk -F'\"' '{print $4}') || exit 1;\n sed -i \"s/REGION/${AWS_REGION}/g\" /etc/sensu/agent.json;\n export CONSOLE_LINK=\"https://${AWS_REGION}.console.aws.amazon.com/systems-manager/session-manager/${CLIENT_ID}?region=${AWS_REGION}\";\n sed -i \"s#console_link#${CONSOLE_LINK}#g\" /etc/sensu/agent.json;"
             ],
             "Essential": false,
             "DependsOn": [
