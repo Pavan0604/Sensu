@@ -60,6 +60,58 @@
           "Ref": "Ec2InternetGateway"
         }
       }
+    },
+    "Sensu1aPublicSubnetRouteTable": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "Ec2Vpc"
+        }
+      }
+    },
+    "Sensu1aPublicSubnetRoute": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "Sensu1aPublicSubnetRouteTable"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "Ec2InternetGateway"
+        }
+      }
+    },
+    "Sensu1aPublicSubnet": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Join": [
+            "",
+            [
+              {
+                "Ref": "AWS::Region"
+              },
+              "a"
+            ]
+          ]
+        },
+        "CidrBlock": "10.1.1.0/24",
+        "MapPublicIpOnLaunch": "true",
+        "VpcId": {
+          "Ref": "Ec2Vpc"
+        }
+      }
+    },
+    "SensuAz1aPublicSubnetRouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "Sensu1aPublicSubnetRouteTable"
+        },
+        "SubnetId": {
+          "Ref": "Sensu1aPublicSubnet"
+        }
+      }
     }
   }
 }
