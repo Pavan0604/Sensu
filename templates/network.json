@@ -102,7 +102,7 @@
         }
       }
     },
-    "Sensu1aPublicSubnetRouteTableAssociation": {
+    "SensuAz1aPublicSubnetRouteTableAssociation": {
       "Type": "AWS::EC2::SubnetRouteTableAssociation",
       "Properties": {
         "RouteTableId": {
